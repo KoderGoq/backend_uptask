@@ -1,0 +1,30 @@
+{
+  "name": "uptask_backend",
+  "version": "1.0.0",
+  "description": "UpTask, Software para llevar un control de tus proyectos, parecido a Jira, ToDo, Etc.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node src/index.ts"
+  },
+  "keywords": [
+    "UpTask",
+    "TypeScript",
+    "Desarrollo",
+    "Web",
+    "Programacion."
+  ],
+  "author": "Luis Fernando Aguilar Jimenez",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.2"
+  }
+}
