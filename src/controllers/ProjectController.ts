@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express'
 import Project from '../models/Project';
 
-// Creamos nuestra clase para luego mandarla llamar en el router. (Obtener todos los proyectos)
+// Creamos nuestra clase para luego mandarla llamar en el router. 
 export class ProjectController {
 
   static createProject = async (req: Request, res: Response) => {
@@ -16,7 +16,14 @@ export class ProjectController {
     }
   };
 
+
+  // (Obtener todos los proyectos)
   static getAllProjects = async (req: Request, res: Response) => {
-    res.send('Todos los proyectos')
+    try {
+      const projects = await Project.find({});
+      res.json(projects)
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
