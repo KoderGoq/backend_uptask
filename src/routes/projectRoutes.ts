@@ -53,8 +53,11 @@ router.delete('/:id',
 
 
 // Routing de las tareas
+
+router.param('projectId', validateProjectExist) // Middleware para validar que el proyecto exista
+
+
 router.post('/:projectId/tasks',
-  validateProjectExist,
   body('name')
     .trim().notEmpty().withMessage('El nombre de la tarea es obligatorio'),
   body('description')
@@ -63,5 +66,34 @@ router.post('/:projectId/tasks',
 
 )
 
+// Obtener todas las tareas de un proyecto
+router.get('/:projectId/tasks',
+  TaskController.getProjectTasks
+)
+
+// Obtener una tarea por ID
+router.get('/:projectId/tasks/:taskId',
+  param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
+  handleInputErrors, // Middleware
+  TaskController.getTaskById
+)
+
+// Actualizar una tarea por ID
+router.put('/:projectId/tasks/:taskId',
+  param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
+  body('name')
+    .trim().notEmpty().withMessage('El nombre de la tarea es obligatorio'),
+  body('description')
+    .trim().notEmpty().withMessage('La descripcion de la tarea es obligatoria'),
+  handleInputErrors, // Middleware
+  TaskController.updateTask
+)
+
+// Eliminar una tarea por ID
+router.delete('/:projectId/tasks/:taskId',
+  param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
+  handleInputErrors, // Middleware
+  TaskController.deleteTask
+)
 
 export default router;
