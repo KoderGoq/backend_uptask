@@ -65,6 +65,8 @@ export class ProjectController {
       console.log(error);
     }
   }
+
+
   // (Eliminar proyectos por ID)
   static deleteProject: RequestHandler = async (req: Request, res: Response) => {
     const { id } = req.params;
