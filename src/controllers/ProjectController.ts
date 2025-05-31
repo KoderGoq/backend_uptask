@@ -51,13 +51,17 @@ export class ProjectController {
     const { id } = req.params;
 
     try {
-      const project = await Project.findByIdAndUpdate(id, req.body); // Toma 2 parametros, uno es el ID y otro es lo que le pasemos para actualizar
+      const project = await Project.findById(id); // Toma 2 parametros, uno es el ID y otro es lo que le pasemos para actualizar
 
       if (!project) {
         const error = new Error('Proyecto No encontrado')
         res.status(404).json({ errror: error.message })
         return;
       }
+
+      project.clientName = req.body.clientName
+      project.projectName = req.body.projectName;
+      project.description = req.body.description;
 
       await project.save();
       res.send('Proyecto Actualizado Correctamente')

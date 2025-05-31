@@ -4,6 +4,7 @@ import { ProjectController } from '../controllers/ProjectController';
 import { handleInputErrors } from '../middleware/validation';
 import { TaskController } from '../controllers/TaskController';
 import { validateProjectExist } from '../middleware/project';
+import { taskBelongsToProject, taskExist } from '../middleware/task';
 
 
 const router = Router(); // Instanciamos nuestro router para ir generando el routing
@@ -71,6 +72,11 @@ router.get('/:projectId/tasks',
   TaskController.getProjectTasks
 )
 
+
+// Middleware para validar que la tarea exista
+router.param('taskId', taskExist)
+router.param('taskId', taskBelongsToProject)
+
 // Obtener una tarea por ID
 router.get('/:projectId/tasks/:taskId',
   param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
@@ -95,5 +101,15 @@ router.delete('/:projectId/tasks/:taskId',
   handleInputErrors, // Middleware
   TaskController.deleteTask
 )
+
+router.post('/:projectId/tasks/:taskId/status',
+  param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
+  body('status')
+    .trim().notEmpty().withMessage('El estado de la tarea es obligatorio'),
+  handleInputErrors, // Middleware
+  TaskController.updateStatus
+
+)
+
 
 export default router;

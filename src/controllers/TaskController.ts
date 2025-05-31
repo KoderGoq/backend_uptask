@@ -19,7 +19,6 @@ export class TaskController {
 
       // Mandamos la respuesta
       res.send('Tarea Creada Correctamente');
-
     } catch (error) {
       console.log(error);
     }
@@ -31,7 +30,6 @@ export class TaskController {
 
       const tasks = await Task.find({ project: req.project.id }).populate('project');
       res.json(tasks);
-
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener las tareas del proyecto' });
     }
@@ -40,26 +38,8 @@ export class TaskController {
   // Obtener una tarea por ID
   static getTaskById = async (req: Request, res: Response) => {
     try {
-
-      const { taskId } = req.params;
-      const task = await Task.findById(taskId);
-
-      // Verificamos si la tarea existe
-      if (!task) {
-        const error = new Error('Tarea No encontrada');
-        res.status(404).json({ error: error.message });
-        return;
-      }
-
-      // Verificamos si la tarea pertenece al proyecto
-      if (task.project.toString() !== req.project.id) {
-        const error = new Error('La tarea no pertenece a este proyecto');
-        res.status(400).json({ error: error.message });
-        return;
-      }
       // Si todo es correcto, respondemos con la tarea
-      res.json(task);
-
+      res.json(req.task);
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener la tarea' });
     }
@@ -68,32 +48,13 @@ export class TaskController {
   // Actualizar una tarea por ID
   static updateTask = async (req: Request, res: Response) => {
     try {
-
-      const { taskId } = req.params;
-      const task = await Task.findById(taskId);
-
-      // Verificamos si la tarea existe
-      if (!task) {
-        const error = new Error('Tarea No encontrada');
-        res.status(404).json({ error: error.message });
-        return;
-      }
-
-      // Verificamos si la tarea pertenece al proyecto
-      if (task.project.toString() !== req.project.id) {
-        const error = new Error('La tarea no pertenece a este proyecto');
-        res.status(400).json({ error: error.message });
-        return;
-      }
-
       // Actualizamos la tarea con los nuevos datos
-      task.name = req.body.name
-      task.description = req.body.description
-      await task.save(); // Guardamos los cambios
+      req.task.name = req.body.name
+      req.task.description = req.body.description
+      await req.task.save(); // Guardamos los cambios
 
       // Si todo es correcto, respondemos con la tarea
       res.send('Tarea Actualizada Correctamente');
-
     } catch (error) {
       res.status(500).json({ error: 'Error al obtener la tarea' });
     }
@@ -103,20 +64,9 @@ export class TaskController {
   static deleteTask = async (req: Request, res: Response) => {
     try {
 
-      const { taskId } = req.params;
-      const task = await Task.findById(taskId, req.body);
-
-      // Verificamos si la tarea existe
-      if (!task) {
-        const error = new Error('Tarea No encontrada');
-        res.status(404).json({ error: error.message });
-        return;
-      }
-
       // Eliminamos la tarea
-      req.project.tasks = req.project.tasks.filter(task => task.toString() !== taskId) // Eliminamos la tarea del proyecto
-
-      await Promise.allSettled([task.deleteOne(), req.project.save()]); // Eliminamos la tarea y guardamos el proyecto
+      req.project.tasks = req.project.tasks.filter(task => task.toString() !== req.task.id.toString()) // Eliminamos la tarea del proyecto
+      await Promise.allSettled([req.task.deleteOne(), req.project.save()]); // Eliminamos la tarea y guardamos el proyecto
 
       // Si todo es correcto, respondemos con la tarea
       res.send('Tarea Eliminada Correctamente');
@@ -125,4 +75,20 @@ export class TaskController {
       res.status(500).json({ error: 'Error al obtener la tarea' });
     }
   }
+
+  // Actualizar el estado de una tarea
+  static updateStatus = async (req: Request, res: Response) => {
+    try {
+
+      const { status } = req.body;
+      req.task.status = status; // Actualizamos el estado de la tarea
+      await req.task.save(); // Guardamos los cambios
+      res.send('Estado de la tarea actualizado correctamente');
+
+    } catch (error) {
+      res.status(500).json({ error: 'Error al actualizar el estado ' });
+    }
+  }
+
+
 }
