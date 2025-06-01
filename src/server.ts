@@ -1,5 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import cors from 'cors';
+import { corsConfig } from './config/cors'; // Importamos la configuracion de CORS
 import { connectDB } from './config/db';
 import projecRoutes from './routes/projectRoutes'; // (router)
 
@@ -10,6 +12,7 @@ connectDB() // Mandamos llamar la conexion a la DB
 
 // Instanciamos express para inicializar nuestro backend
 const app = express();
+app.use(cors(corsConfig)) // Habilitamos CORS con la configuracion que tenemos en el archivo cors.ts
 
 app.use(express.json()) // Habilitamos la lectura de JSON que mandemos en POST a la consola(req.body)
 
