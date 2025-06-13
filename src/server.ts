@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import { corsConfig } from './config/cors'; // Importamos la configuracion de CORS
 import { connectDB } from './config/db';
 import projecRoutes from './routes/projectRoutes'; // (router)
+import authRoutes from './routes/authRoutes';
 
 
 dotenv.config() // Se mandan llamar las variables de entorno en nuestro server
@@ -21,6 +22,7 @@ app.use(morgan('dev'))
 app.use(express.json()) // Habilitamos la lectura de JSON que mandemos en POST a la consola(req.body)
 
 // Routes (Aqui se define el routing o las Urls a consultar defininas en el routes)
+app.use('/api/auth', authRoutes);
 app.use('/api/projects', projecRoutes);
 
 export default app
