@@ -30,5 +30,14 @@ router.post('/confirmed-account',
   AuthController.confirmAccount
 );
 
+router.post('/login',
+  body('email')
+    .isEmail().withMessage('E-mail no valido'),
+  body('password')
+    .notEmpty().withMessage('El password no debe ir vacio'),
+  handleInputErrors,
+  AuthController.login
+);
+
 
 export default router;
