@@ -3,6 +3,7 @@ import User from '../models/User';
 import { hashPassword } from '../utils/auth';
 import Token from '../models/Token';
 import { generateToken } from '../utils/token';
+import { AuthEmail } from '../emails/AuthEmail';
 
 
 export class AuthController {
@@ -30,11 +31,40 @@ export class AuthController {
       token.token = generateToken();
       token.user = user.id;
 
+      // Enviar email de confirmacion
+      AuthEmail.senConfirmationEmail({
+        email: user.email,
+        name: user.name,
+        token: token.token
+      })
+
+
       await Promise.allSettled([user.save(), token.save()]);
 
       res.send('Cuenta creada, revisa tu correo para confirmarla')
     } catch (error) {
       res.status(500).json({ error: 'Error al crear la cuenta' })
+    }
+  }
+
+  static confirmAccount = async (req: Request, res: Response) => {
+    try {
+      const { token } = req.body;
+      const tokenExist = await Token.findOne({ token });
+      if (!tokenExist) {
+        const error = new Error('Token no valido');
+        res.status(401).json({ error: error.message });
+        return;
+      }
+
+      const user = await User.findById(tokenExist.user);
+      user.confirmed = true
+
+      await Promise.allSettled([user.save(), tokenExist.deleteOne()]);
+      res.send('Cuenta confirmada correctamente');
+
+    } catch (error) {
+      res.status(500).json({ error: 'Hubo un  al confirmar la cuenta' })
     }
   }
 }
