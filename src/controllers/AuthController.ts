@@ -110,4 +110,43 @@ export class AuthController {
       res.status(500).json({ error: 'Error al Ingresar' })
     }
   }
+
+  static requestConfirmationCode = async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+
+      // Usuario existe
+      const user = await User.findOne({ email });
+      if (!user) {
+        const error = new Error('El usuario no esta registrado');
+        res.status(404).json({ error: error.message });
+        return;
+      }
+
+      if (user.confirmed) {
+        const error = new Error('El usuario ya esta confirmado');
+        res.status(403).json({ error: error.message });
+        return;
+      }
+
+      // generar token
+      const token = new Token();
+      token.token = generateToken();
+      token.user = user.id;
+
+      // Enviar email de confirmacion
+      AuthEmail.senConfirmationEmail({
+        email: user.email,
+        name: user.name,
+        token: token.token
+      })
+
+
+      await Promise.allSettled([user.save(), token.save()]);
+
+      res.send('Se envio un nuevo token a tu e-email')
+    } catch (error) {
+      res.status(500).json({ error: 'Error al crear la cuenta' })
+    }
+  }
 }
