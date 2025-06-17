@@ -5,9 +5,13 @@ import { handleInputErrors } from '../middleware/validation';
 import { TaskController } from '../controllers/TaskController';
 import { validateProjectExist } from '../middleware/project';
 import { taskBelongsToProject, taskExist } from '../middleware/task';
+import { authenticate } from '../middleware/auth';
+import { TeamMenberController } from '../controllers/TeamController';
 
 
 const router = Router(); // Instanciamos nuestro router para ir generando el routing
+
+router.use(authenticate);
 
 
 // Creamos el CRUD (Se hacen la peticion para que luego consulte al server.ts)
@@ -109,6 +113,32 @@ router.post('/:projectId/tasks/:taskId/status',
   handleInputErrors, // Middleware
   TaskController.updateStatus
 
+)
+
+// routes for teams
+router.post('/:projectId/team/find',
+  body('email')
+    .isEmail().toLowerCase().withMessage('E-mail no valido'),
+  handleInputErrors,
+  TeamMenberController.finMemberByEmail
+)
+
+router.get('/:projectId/team',
+  TeamMenberController.getProjectTeam
+)
+
+router.post('/:projectId/team',
+  body('id')
+    .isMongoId().withMessage('ID No valido'),
+  handleInputErrors,
+  TeamMenberController.addMemberById
+)
+
+router.delete('/:projectId/team',
+  body('id')
+    .isMongoId().withMessage('ID No valido'),
+  handleInputErrors,
+  TeamMenberController.removeMemberById
 )
 
 

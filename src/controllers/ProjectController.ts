@@ -7,6 +7,9 @@ export class ProjectController {
   static createProject = async (req: Request, res: Response) => {
     const project = new Project(req.body) // Generar una instancia del modelo para crear un proyecto
 
+    // Asignar un manager de proyectos
+    project.manager = req.user.id;
+
     try {
       await project.save() // Lo almacenamos en la base de datos
       // await Project.create(req.body) // Otra forma de crear proyecto con menos codigo
@@ -20,7 +23,11 @@ export class ProjectController {
   // (Obtener todos los proyectos)
   static getAllProjects = async (req: Request, res: Response) => {
     try {
-      const projects = await Project.find({});
+      const projects = await Project.find({
+        $or: [
+          { manager: { $in: req.user.id } }
+        ]
+      });
       res.json(projects)
     } catch (error) {
       console.log(error);
@@ -40,6 +47,11 @@ export class ProjectController {
         res.status(404).json({ errror: error.message })
         return;
       }
+      if (project.manager.toString() !== req.user.id.toString()) {
+        const error = new Error('Accion no valida')
+        res.status(404).json({ errror: error.message })
+        return;
+      }
       res.json(project)
     } catch (error) {
       console.log(error);
@@ -55,6 +67,12 @@ export class ProjectController {
 
       if (!project) {
         const error = new Error('Proyecto No encontrado')
+        res.status(404).json({ errror: error.message })
+        return;
+      }
+
+      if (project.manager.toString() !== req.user.id.toString()) {
+        const error = new Error('Solo el manager puede actualizar el proyecto')
         res.status(404).json({ errror: error.message })
         return;
       }
@@ -81,6 +99,12 @@ export class ProjectController {
 
       if (!project) {
         const error = new Error('Proyecto No encontrado')
+        res.status(404).json({ errror: error.message })
+        return;
+      }
+
+      if (project.manager.toString() !== req.user.id.toString()) {
+        const error = new Error('Solo el manager puede eliminar el proyecto')
         res.status(404).json({ errror: error.message })
         return;
       }
