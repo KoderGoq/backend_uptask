@@ -46,3 +46,14 @@ export async function taskBelongsToProject(req: Request, res: Response, next: Ne
   next(); // Si todo es correcto, continuamos con el siguiente middleware o controlador
 
 }
+export async function hasAuthorization(req: Request, res: Response, next: NextFunction) {
+
+  if (req.user.id.toString() !== req.project.manager.toString()) {
+    const error = new Error('Accion no valida');
+    res.status(400).json({ error: error.message });
+    return;
+  }
+
+  next(); // Si todo es correcto, continuamos con el siguiente middleware o controlador
+
+}

@@ -4,7 +4,7 @@ import { ProjectController } from '../controllers/ProjectController';
 import { handleInputErrors } from '../middleware/validation';
 import { TaskController } from '../controllers/TaskController';
 import { validateProjectExist } from '../middleware/project';
-import { taskBelongsToProject, taskExist } from '../middleware/task';
+import { hasAuthorization, taskBelongsToProject, taskExist } from '../middleware/task';
 import { authenticate } from '../middleware/auth';
 import { TeamMenberController } from '../controllers/TeamController';
 
@@ -63,6 +63,7 @@ router.param('projectId', validateProjectExist) // Middleware para validar que e
 
 
 router.post('/:projectId/tasks',
+  hasAuthorization,
   body('name')
     .trim().notEmpty().withMessage('El nombre de la tarea es obligatorio'),
   body('description')
@@ -90,6 +91,7 @@ router.get('/:projectId/tasks/:taskId',
 
 // Actualizar una tarea por ID
 router.put('/:projectId/tasks/:taskId',
+  hasAuthorization,
   param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
   body('name')
     .trim().notEmpty().withMessage('El nombre de la tarea es obligatorio'),
@@ -101,6 +103,7 @@ router.put('/:projectId/tasks/:taskId',
 
 // Eliminar una tarea por ID
 router.delete('/:projectId/tasks/:taskId',
+  hasAuthorization,
   param('taskId').isMongoId().withMessage('ID No Valido'), // Validacion para el ID al momento de recuperar tareas
   handleInputErrors, // Middleware
   TaskController.deleteTask
