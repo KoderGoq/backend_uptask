@@ -1,0 +1,1 @@
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/ad5119e1ec24420c92911555605bc9bf)](https://app.codacy.com/gh/KoderGoq/backend_uptask/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
