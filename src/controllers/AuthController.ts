@@ -269,4 +269,19 @@ export class AuthController {
       res.status(500).json('Error al actualizar el password');
     }
   }
+
+  static checkPassword = async (req: Request, res: Response) => {
+    const { password } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    const isPasswordCorrect = await checkPassowrd(password, user.password);
+    if (!isPasswordCorrect) {
+      const error = new Error('El password es incorrecto');
+      res.status(401).json({ error: error.message });
+      return;
+    }
+    res.send('Password Correcto');
+  }
+
 }
