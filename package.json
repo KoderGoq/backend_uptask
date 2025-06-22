@@ -4,7 +4,9 @@
   "description": "UpTask, Software para llevar un control de tus proyectos, parecido a Jira, ToDo, Etc.",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --exec ts-node src/index.ts"
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node ./dist/index.js"
   },
   "keywords": [
     "UpTask",
