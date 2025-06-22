@@ -61,30 +61,12 @@ export class ProjectController {
 
   // (Actualizar proyectos por ID)
   static updateProject: RequestHandler = async (req: Request, res: Response) => {
-    const { id } = req.params;
-
     try {
-      const project = await Project.findById(id); // Toma 2 parametros, uno es el ID y otro es lo que le pasemos para actualizar
-
-      if (!project) {
-        const error = new Error('Proyecto No encontrado')
-        res.status(404).json({ errror: error.message })
-        return;
-      }
-
-      if (project.manager.toString() !== req.user.id.toString()) {
-        const error = new Error('Solo el manager puede actualizar el proyecto')
-        res.status(404).json({ errror: error.message })
-        return;
-      }
-
-      project.clientName = req.body.clientName
-      project.projectName = req.body.projectName;
-      project.description = req.body.description;
-
-      await project.save();
+      req.project.clientName = req.body.clientName
+      req.project.projectName = req.body.projectName;
+      req.project.description = req.body.description;
+      await req.project.save();
       res.send('Proyecto Actualizado Correctamente')
-
     } catch (error) {
       console.log(error);
     }
@@ -93,26 +75,9 @@ export class ProjectController {
 
   // (Eliminar proyectos por ID)
   static deleteProject: RequestHandler = async (req: Request, res: Response) => {
-    const { id } = req.params;
-
     try {
-      const project = await Project.findById(id);
-
-      if (!project) {
-        const error = new Error('Proyecto No encontrado')
-        res.status(404).json({ errror: error.message })
-        return;
-      }
-
-      if (project.manager.toString() !== req.user.id.toString()) {
-        const error = new Error('Solo el manager puede eliminar el proyecto')
-        res.status(404).json({ errror: error.message })
-        return;
-      }
-
-      await project.deleteOne();
+      await req.project.deleteOne();
       res.send('Proyecto Eliminado Correctamente');
-
     } catch (error) {
       console.log(error);
     }
